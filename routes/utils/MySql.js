@@ -5,7 +5,7 @@ const config = {
   connectionLimit: process.env.connectionLimit, //4
   host: process.env.host, //"localhost"
   user: process.env.user, //"root"
-  password: "12345678", //"1234"
+  password: process.env.password, //"1234"
   database: process.env.database, //"recipe_db"
 };
 const pool = new mysql.createPool(config);

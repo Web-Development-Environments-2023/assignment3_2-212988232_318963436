@@ -75,6 +75,8 @@ async function randomRecipes(query) {
   return await Promise.all(recipes);
 }
 async function getUserRecipeInfo(recipe_id, user_id) {
+  console.log(recipe_id, user_id);
+
   let favorite = await DButils.execQuery(
     `select * from favorites where user_id='${user_id}' and recipe_id='${recipe_id}'`
   );
