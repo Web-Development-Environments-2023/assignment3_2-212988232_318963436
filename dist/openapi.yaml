@@ -1,230 +1,631 @@
+---
 openapi: 3.0.0
 info:
-  title: Recipes api
-  description: API for recipes project
-  version: 1.0.1
+  title: Recipe API
+  description: This API is for the recipe app project in the course "Internet Programing Environments" in the Ben Gurion University.
+  contact:
+    name: Yuval Gorodissky and Noam Azulay
+    email: yuvalgor@post.bgu.ac.il
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-# local:
-- url: "http://127.0.0.1:3000"
-# remote:
-# - url: "http://132.72.65.211"
-  description: SwaggerHub API Auto Mocking hey
+  - url: http://127.0.0.1:3000
+    description: SwaggerHub API Auto Mocking
 tags:
-- name: Auth
-  description: All authentication related routes
-- name: Users
-  description: All the user's personal app info
-- name: Recipes
-  description: All reciepes general info
+  - name: user
+    description: Operations to manage users
+  - name: recipe
+    description: Operations to manage recipes
+  - name: auth
+    description: Operations to manage authentication
+
 paths:
-  /register:
+  /users/createRecipe:
     post:
       tags:
-      - Auth
-      summary: A new user from the client is added to the server
-      description: A JSON object contains all the details about the new user.
+        - user
+      summary: Create new recipe
+      description: This can only be done by the logged in user.
+      operationId: createRecipe
       requestBody:
-        description: Inventory item to add
+        description: Recipe object that needs to be added to the store
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/Recipe"
         required: true
       responses:
         "201":
-          description: A new user has been added
+          description: Recipe created
         "400":
-          description: wrong input parameters
-  /login:
-    post:
+          description: Invalid input
+  /users/getRecipes:
+    get:
       tags:
-      - Auth
-      summary: Login an exist user
-      description: An exist user login to the system
+        - user
+      summary: Get all recipes
+      description: Returns all recipes
+      operationId: getRecipes
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Recipe"
+        "400":
+          description: There are no recipes
+
+  /users/deleteRecipe:
+    delete:
+      tags:
+        - user
+      summary: Delete recipe by ID
+      description: Delete a single recipe
+      operationId: deleteRecipeById
       requestBody:
+        description: RecipeID that needs to be deleted
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginScheme'
+              $ref: "#/components/schemas/Recipeid"
+
         required: true
       responses:
         "200":
-          description: |
-            User was found in the DB and authenitcated successfully. The session ID is returned in a cookie named `session`.  You should include this cookie in subsequent requests
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+
+  /users/updateRecipe:
+    put:
+      tags:
+        - user
+      summary: Update recipe by ID
+      description: Update a single recipe
+      operationId: updateRecipeById
+      requestBody:
+        description: Recipe object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipe"
+
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+
+  /users/setFavoriteRecipe:
+    post:
+      tags:
+        - user
+      summary: Set favorite recipe by ID
+      description: Set a single recipe as favorite
+      operationId: setFavoriteRecipeById
+      requestBody:
+        description: RecipeID that needs to be set as favorite
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipeid"
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+
+  /users/unsetFavoriteRecipe:
+    post:
+      tags:
+        - user
+      summary: Unset favorite recipe by ID
+      description: Unset a single recipe as favorite
+      operationId: unsetFavoriteRecipeById
+      requestBody:
+        description: RecipeID that needs to be unset as favorite
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipeid"
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /users/markAsLike:
+    post:
+      tags:
+        - user
+      summary: Mark recipe as like by ID
+      description: Mark a single recipe as like
+      operationId: markAsLikeById
+      requestBody:
+        description: RecipeID that needs to be marked as like
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipeid"
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /users/unmarkAsLike:
+    post:
+      tags:
+        - user
+      summary: Unmark recipe as like by ID
+      description: Unmark a single recipe as like
+      operationId: unmarkAsLikeById
+      requestBody:
+        description: RecipeID that needs to be unmarked as like
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipeid"
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /users/getFavoriteRecipes:
+    get:
+      tags:
+        - user
+      summary: Get all favorite recipes
+      description: Returns all favorite recipes
+      operationId: getFavoriteRecipes
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Recipe"
+        "400":
+          description: There are no favorite recipes
+  /users/setSeenRecipe:
+    post:
+      tags:
+        - user
+      summary: Set seen recipe by ID
+      description: Set a single recipe as seen
+      operationId: setSeenRecipeById
+      requestBody:
+        description: RecipeID that needs to be set as seen
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipeid"
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /users/getSeenRecipes:
+    get:
+      tags:
+        - user
+      summary: Get all seen recipes
+      description: Returns all seen recipes
+      operationId: getSeenRecipes
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Recipe"
+        "400":
+          description: There are no seen recipes
+  /recipe/getNRandomRecipes{numOfRecipes}:
+    get:
+      tags:
+        - recipe
+      summary: Get N random recipes
+      description: Returns N random recipes
+      operationId: getNRandomRecipes
+      parameters:
+        - name: numOfRecipes
+          in: path
+          description: number of recipes to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: The recipe objects that was found
+                items:
+                  $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid name supplied
+        "404":
+          description: Recipe not found
+
+  /recipe/getRecipeByName/{recipeName}/{numOfRecipes}:
+    get:
+      tags:
+        - recipe
+      summary: Get recipe by name
+      description: Returns a single recipe
+      operationId: getRecipeByName
+      parameters:
+        - name: recipeName
+          in: path
+          description: name of recipe to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+        - name: numOfRecipes
+          in: path
+          description: number of recipes to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            example: 5
+            enum:
+              - 5
+              - 10
+              - 15
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: The recipe objects that was found
+                items:
+                  $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid name supplied
+        "404":
+          description: Recipe not found
+  /recipe/getRecipe{recipeId}:
+    get:
+      tags:
+        - recipe
+      summary: Get recipe by ID
+      description: Returns a single recipe
+      operationId: getRecipeById
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of recipe to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /Login:
+    post:
+      tags:
+        - auth
+      summary: Logs user into the system
+      description: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        description: The user object that needs to be logged in
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+        required: true
+      responses:
+        "200":
+          description: "Login successful, The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests."
           headers:
             Set-Cookie:
               style: simple
               explode: false
               schema:
                 type: string
-                example: session=87s97sdhgf279293f8w0e9
-        "401":
-          description: Authentication failed
-  /logout:
+                description: The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests.
+                example: JSESSIONID=123456789; Path=/; HttpOnly
+        "400":
+          description: Invalid username/password supplied
+  /Register:
     post:
       tags:
-        - Auth
-      summary: logout a user from the system and delete his cookie
-      responses:
-        "200":
-          description: "the user has ben successfully logged out"
-  /users/favorites:
-    get:
-      tags:
-      - Users
-      summary: Return the favorite recipes that were saved by user
-      description: Get an array of recipes that were saved by a specific user
-      responses:
-        "200":
-          description: data about the user's favorites recipes returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RecipePreview'
-        "401":
-          description: user is not authorized
-      security:
-      - cookieAuth: []
-    post:
-      tags:
-      - Users
-      summary: save recipe in the favorites list of a user
-      description: save recipe in the favorites list of a user
+        - auth
+      summary: Register user
+      description: This can only be done by not logged in user.
+      operationId: registerUser
       requestBody:
+        description: The user object that needs to be registered
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                reciepeId:
-                  type: string
-                  description: reciepe's id which the user saved
-                  example: 716429
+              $ref: "#/components/schemas/UserRegister"
+        required: true
       responses:
         "200":
-          description: The Recipe successfully saved as favorite
-        "401":
-          description: user is not authorized
-      security:
-      - cookieAuth: []
-  /recipes/{recipeId}:
+          description: User created
+        "400":
+          description: Invalid input
+  /Logout:
     get:
       tags:
-      - Recipes
-      summary: Return preview details on recipe by his ID
-      description: Return preview details on recipe by his ID
-      parameters:
-      - name: recipeId
-        in: path
-        description: recipe's id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+        - auth
+      summary: Logs out current logged in user session
+      description: Logs out current logged in user session
+      operationId: logoutUser
       responses:
         "200":
-          description: data about the recipe
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecipePreview'
-        "404":
-          description: recipeId is not exists
+          description: successful operation
 components:
   schemas:
-    User:
-      type: object
+    Recipeid:
+      required:
+        - recipeId
       properties:
-        username:
-          maxLength: 8
-          minLength: 3
-          type: string
-          description: username conatins between 3 to 8 letters only
-          example: my_name
-        firstname:
-          type: string
-          description: user's first name
-          example: my_first_name
-        lastname:
-          type: string
-          description: user's last name
-          example: my_last_name
-        country:
-          type: string
-          description: user's country
-          example: Israel
-        password:
-          maxLength: 10
-          minLength: 5
-          type: string
-          description: password conatins between 5 to 10 chars, at least one of them
-            is a number and a special char
-          format: password
-          example: my_name@12
-        email:
-          pattern: email
-          type: string
-          description: user's email
-          example: my_name12@gmail.com
-        # image-url:
-        #   pattern: URL
-        #   type: string
-        #   description: URL for the user's image
-        #   example: https://cloudinary.com/
-      description: Model containing user info
-    LoginScheme:
-      type: object
-      properties:
-        username:
-          maxLength: 8
-          minLength: 3
-          type: string
-          description: username conatins letters only
-        password:
-          maxLength: 10
-          minLength: 5
-          description: password conatins at least one number and one special char
-          format: password
-      example:
-        username: my_name
-        password: my_name@12
-    RecipePreview:
-      type: object
-      properties:
-        id:
+        recipeId:
+          description: Recipe ID
           type: integer
-          description: recipe identifier
-          example: 102
-        title:
-          type: string
-          description: recipe name
-          example: Simple Macaroni and Cheese
+          format: int64
+          example: 1
+    PreviewRecipe:
+      required:
+        - glutenFree
+        - image
+        - likes
+        - name
+        - readyInMinutes
+        - vegiterianLevel
+      type: object
+      properties:
         image:
+          type: object
+          description: image of the recipe
+        name:
           type: string
-          description: recipe image
-          format: URL
-          example: https://spoonacular.com/recipeimages/655455-566x370.jpg
+          description: name of the recipe
+          example: Falafel
         readyInMinutes:
+          minimum: 0
           type: integer
-          description: the time takes to make this recipe
-          example: 45
-        popularity:
+          description: time to cook in minutes
+          example: 20
+        likes:
+          minimum: 0
           type: integer
-          description: how many likes got this recipe
-          example: 5987
-        vegetarian:
-          type: boolean
-          description: indication if the recipe is vegetarian
-          example: false
-        vegan:
-          type: boolean
-          description: indication if the recipe is vegan
-          example: false
+          description: number of likes of the recipe
+          example: 20
+        vegiterianLevel:
+          type: string
+          description: "vegiterian, vegan, non vegiterian"
+          example: vegiterian
+          enum:
+            - vegiterian
+            - non vegiterian
+            - vegan
         glutenFree:
           type: boolean
-          description: indication if the recipe is gluten free
-          example: false
-  
+          description: is the recipe gluten free
+          example: true
+      description: preview details of the recipe
+    Recipe:
+      required:
+        - recipeId
+        - ingredients
+        - numberOfServings
+        - previewDetails
+        - steps
+      type: object
+      properties:
+        recipeId:
+          minimum: 0
+          type: integer
+          description: id of the recipe
+          example: 1
+        previewDetails:
+          $ref: "#/components/schemas/PreviewRecipe"
+        ingredients:
+          $ref: "#/components/schemas/Ingredients"
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/Recipe_steps"
+        numberOfServings:
+          minimum: 1
+          type: integer
+          description: number of servings
+          example: 4
+    Ingredient:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of the ingredient
+          example: tomato
+    Ingredients:
+      required:
+        - listIngredients
+      type: object
+      properties:
+        listIngredients:
+          type: array
+          items:
+            $ref: "#/components/schemas/Ingredients_listIngredients"
+    Step:
+      required:
+        - description
+        - stepNumber
+      type: object
+      properties:
+        stepNumber:
+          minimum: 1
+          type: integer
+          description: number of the step
+          example: 1
+        description:
+          type: string
+          description: step of the recipe
+          example: Cook the rice for 20 minutes
+    User:
+      required:
+        - country
+        - email
+        - favoriteRecipes
+        - firstName
+        - lastName
+        - password
+        - seenRecipes
+        - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: username of the user
+          example: IsrealIsreali
+        firstName:
+          type: string
+          description: first name of the user
+          example: Isreal
+        lastName:
+          type: string
+          description: last name of the user
+          example: Isreali
+        country:
+          type: string
+          description: country of the user
+          example: Isreal
+        password:
+          type: string
+          description: password of the user
+          example: "123456"
+        email:
+          type: string
+          description: email of the user
+          example: bal@bla.com
+        favoriteRecipes:
+          type: array
+          description: favorite recipes of the user
+          items:
+            $ref: "#/components/schemas/User_favoriteRecipes"
+        seenRecipes:
+          type: array
+          description: seen recipes of the user
+          items:
+            $ref: "#/components/schemas/User_favoriteRecipes"
+    UserLogin:
+      required:
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: username of the user
+          example: IsrealIsreali
+        password:
+          type: string
+          description: password of the user
+          example: "123456"
+    UserRegister:
+      required:
+        - country
+        - email
+        - firstName
+        - lastName
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: username of the user
+          example: IsrealIsreali
+        firstName:
+          type: string
+          description: first name of the user
+          example: Isreal
+        lastName:
+          type: string
+          description: last name of the user
+          example: Isreali
+        country:
+          type: string
+          description: country of the user
+          example: Isreal
+        password:
+          type: string
+          description: password of the user
+          example: "123456"
+        email:
+          type: string
+          description: email of the user
+          example: bal@bla.com
+    Recipe_steps:
+      properties:
+        step:
+          $ref: "#/components/schemas/Step"
+    Ingredients_listIngredients:
+      properties:
+        ingredient:
+          $ref: "#/components/schemas/Ingredient"
+        amount:
+          minimum: 1
+          type: integer
+          description: amount of the ingredient
+          example: 4
+    User_favoriteRecipes:
+      properties:
+        recipe:
+          $ref: "#/components/schemas/PreviewRecipe"

@@ -1,1 +1,4 @@
-SELECT * FROM mydb.users;
+SELECT * FROM recipe_db.users;
+
+
+
