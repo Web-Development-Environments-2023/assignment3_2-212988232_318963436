@@ -21,7 +21,8 @@ CREATE TABLE
         name VARCHAR(50),
         imageURL VARCHAR(255),
         readyInMinutes INTEGER,
-        vegetarianlevel ENUM("vegiterian", "vegan", "non vegiterian"),
+        vegiterian BOOLEAN,
+        vegan BOOLEAN,
         glutenfree BOOLEAN,
         recipe_date DATE,
         user_id INT,
@@ -29,19 +30,10 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    likes (
-        user_id INT ,
-        recipe_id INT ,
-        date DATE,
-        PRIMARY KEY (user_id, recipe_id),
-        FOREIGN KEY (user_id) REFERENCES users(user_id)
-    );
-
-CREATE TABLE
     favorites (
         user_id INT ,
         recipe_id INT ,
-        date DATE,
+        date TIMESTAMP,
         PRIMARY KEY (user_id, recipe_id),
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     );
@@ -50,14 +42,15 @@ CREATE TABLE
     seens (
         user_id INT ,
         recipe_id INT ,
-        date DATE,
+        date TIMESTAMP,
         PRIMARY KEY (user_id, recipe_id),
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     );
 CREATE TABLE 
     ingredients(
-        ingredient_id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(50)
+        ingredient_id INT PRIMARY KEY,
+        name VARCHAR(50),
+        imageURL VARCHAR(255)
     );
 CREATE TABLE
     recipe_ingredients(
@@ -79,6 +72,27 @@ CREATE TABLE
         FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id)
     );
 
+CREATE TABLE
+    family(
+        family_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50)
+    );
+CREATE TABLE
+    user_family(
+        family_id INT,
+        user_id INT,
+        PRIMARY KEY (family_id, user_id),
+        FOREIGN KEY (family_id) REFERENCES family(family_id),
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+    );
+CREATE TABLE
+    recipe_family(
+        family_id INT,
+        recipe_id INT,
+        PRIMARY KEY (family_id, recipe_id),
+        FOREIGN KEY (family_id) REFERENCES family(family_id),
+        FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id)
+    );
 
 
 
