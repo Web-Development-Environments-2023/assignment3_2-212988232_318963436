@@ -3,26 +3,11 @@ var router = express.Router();
 const recipes_utils = require("./utils/recipes_utils");
 const DButils = require("./utils/DButils");
 
-router.use(async function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM users")
-      .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
-          next();
-        }
-      })
-      .catch((err) => next(err));
-  } else {
-    res.sendStatus(401);
-  }
-});
 router.get("/", (req, res) => res.send("im here"));
 
-router.get("/getRecipeByName", async (req, res, next) => {
+router.get("/search", async (req, res, next) => {
   try {
-    const user_id = req.session.user_id;
-    const recipes = await recipes_utils.searchByName(req.query, user_id);
+    const recipes = await recipes_utils.searchByName(req.query);
     if (recipes.length == 0) {
       throw { status: 404, message: "There are no recipes with this name" };
     }
@@ -32,10 +17,9 @@ router.get("/getRecipeByName", async (req, res, next) => {
   }
 });
 
-router.get("/getRandom", async (req, res, next) => {
+router.get("/random", async (req, res, next) => {
   try {
-    const user_id = req.session.user_id;
-    const recipes = await recipes_utils.randomRecipes(req.query, user_id);
+    const recipes = await recipes_utils.randomRecipes(req.query);
     res.send(recipes);
   } catch (error) {
     next(error);
@@ -47,10 +31,8 @@ router.get("/getRandom", async (req, res, next) => {
  */
 router.get("/:recipeId", async (req, res, next) => {
   try {
-    const user_id = req.session.user_id;
-    const recipe = await recipes_utils.getRecipeDetails(
-      req.params.recipeId,
-      user_id
+    const recipe = await recipes_utils.getRecipeFullDetails(
+      req.params.recipeId
     );
     res.send(recipe);
   } catch (error) {
