@@ -15,5 +15,6 @@ const connection = await MySql.connection();
     await connection.release();
   }
   return returnValue
+  
 }
 
