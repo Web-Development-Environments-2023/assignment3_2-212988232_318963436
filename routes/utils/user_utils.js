@@ -22,10 +22,10 @@ async function getFavoriteRecipes(user_id) {
 }
 
 async function getMyRecipes(user_id) {
-  const recipes_id = await DButils.execQuery(
-    `select recipe_id from recipes where user_id='${user_id}'`
+  const recipes = await DButils.execQuery(
+    `select * from recipes where user_id='${user_id}'`
   );
-  return recipes_id;
+  return recipes;
 }
 
 
@@ -34,7 +34,7 @@ async function createRecipe(user_id, recipe) {
     recipe.previewDetails;
 
   let query = `INSERT INTO recipes (name, imageURL, readyInMinutes, vegiterian, vegan, glutenfree, recipe_date, user_id)
-             VALUES ('${name}', '${imageURL}', '${readyInMinutes}', ${vegiterian}, ${vegan}, ${glutenfree}, CURRENT_TIMESTAMP(), '${user_id}');`;
+             VALUES ('${name}', '${imageURL}', '${readyInMinutes}', ${vegiterian}, ${vegan}, ${glutenfree}, CURDATE(), '${user_id}');`;
         
   let result = await DButils.execQuery(query);  
   let recipe_id = result.insertId;
@@ -66,7 +66,24 @@ async function createRecipe(user_id, recipe) {
   //TODO: add ingredients and instructions
 }
 
+async function setseen(user_id, recipe_id) {
+  try{
+    await DButils.execQuery(
+      `insert into seens values ('${user_id}',${recipe_id},CURRENT_TIMESTAMP())`
+    )
+  }
+  catch{
+    await DButils.execQuery(
+      `update seens set date=CURRENT_TIMESTAMP() where user_id='${user_id}' and recipe_id=${recipe_id}`
+    )
+  }
+
+}
+
+
 exports.favorite = favorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.getMyRecipes = getMyRecipes;
 exports.createRecipe = createRecipe;
+exports.setseen = setseen;
+
