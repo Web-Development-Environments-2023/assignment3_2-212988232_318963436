@@ -35,9 +35,6 @@ async function createRecipe(user_id, recipe) {
 
   let query = `INSERT INTO recipes (name, imageURL, readyInMinutes, vegiterian, vegan, glutenfree, recipe_date, user_id)
              VALUES ('${name}', '${imageURL}', '${readyInMinutes}', ${vegiterian}, ${vegan}, ${glutenfree}, CURRENT_TIMESTAMP(), '${user_id}');`;
-  
-  console.log("***************");
-
         
   let result = await DButils.execQuery(query);  
   let recipe_id = result.insertId;
