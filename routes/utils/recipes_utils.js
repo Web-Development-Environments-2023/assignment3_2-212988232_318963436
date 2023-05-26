@@ -19,7 +19,7 @@ async function getRecipeInformation(recipe_id) {
 }
 
 async function getRecipeFullDetails(recipe_id, user_id) {
-  recipe_info = await getRecipeInformation(recipe_id).then((res, user_id) => {
+  recipe_info = await getRecipeInformation(recipe_id).then((res) => {
     return getPreviewInformation(res.data, user_id);
   });
 
