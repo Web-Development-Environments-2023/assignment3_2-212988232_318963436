@@ -84,7 +84,7 @@ router.get("/seen", async (req, res, next) => {
 });
 
 /**
- * This path set the recipe as seen by the user
+ * This path set the recipe as seen by the user.
  */
 
 router.post("/mine", async (req, res, next) => {
