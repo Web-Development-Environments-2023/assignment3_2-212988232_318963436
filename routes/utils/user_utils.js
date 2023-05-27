@@ -1,4 +1,7 @@
+const { NText } = require("mssql");
 const DButils = require("./DButils");
+const api_domain = "https://api.spoonacular.com";
+const axios = require("axios");
 
 async function favorite(user_id, recipe_id, isfav) {
   if (isfav) {
@@ -38,25 +41,33 @@ async function createRecipe(user_id, recipe) {
   let steps = recipe.steps;
   let ingredients = recipe.ingredients;
 
-  for (step in steps) {
+  steps.forEach(async (step) => {
     await DButils.execQuery(
-      `INSERT INTO steps (recipe_id, step_number, description) values (${recipe_id}','${step[step_number]}','${steps[description]}')`
+      `INSERT INTO steps (recipe_id, step_number, description) values ('${recipe_id}','${step.step_number}','${steps.description}')`
     );
-  }
-  for (ingredient in ingredients) {
+  });
+  ingredients.forEach(async (ingredient) => {
+    console.log(ingredient, "ingredient");
     try {
       await DButils.execQuery(
-        `INSERT INTO ingredients (ingredient_id,name, imageURL) values (${ingredient[ingredient_id]}',${ingredient[name]}','${ingredient[imageURL]}')`
-      );
-    } catch {
+        `INSERT INTO ingredients (ingredient_id,name, imageURL) values ('${ingredient.ingredient_id}','${ingredient.name}','${ingredient.imageURL}')`
+      ).then(async () => {
+        await DButils.execQuery(
+          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, units) values ('${recipe_id}','${ingredient.ingredient_id}','${ingredient.amount}','${ingredient.units}')`
+        );
+      });
+    } catch (error) {
+      if (error.code === "ER_DUP_ENTRY" && error.errno === 1062) {
+        await DButils.execQuery(
+          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, units) values ('${recipe_id}','${ingredient.ingredient_id}','${ingredient.amount}','${ingredient.units}')`
+        );
+      } else {
+        console.log("An error occurred:", error);
+        throw error;
+      }
       //ingredient already exists
     }
-
-    await DButils.execQuery(
-      `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, units) values (${recipe_id}','${ingredient[ingredient_id]}','${ingredient[amount]}','${ingredient[units]}')`
-    );
-  }
-  //TODO: add ingredients and instructions
+  });
 }
 
 async function getThreeLastSeens(user_id) {
@@ -77,6 +88,17 @@ async function setseen(user_id, recipe_id) {
     );
   }
 }
+async function getIngerdients(name, number) {
+  number = number || 3;
+  const ingredients = await axios.get(`${api_domain}/food/ingredients/search`, {
+    params: {
+      apiKey: process.env.spooncular_apiKey,
+      query: name,
+      number: number,
+    },
+  });
+  return ingredients.data;
+}
 
 exports.favorite = favorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
@@ -84,3 +106,4 @@ exports.getMyRecipes = getMyRecipes;
 exports.createRecipe = createRecipe;
 exports.getThreeLastSeens = getThreeLastSeens;
 exports.setseen = setseen;
+exports.getIngerdients = getIngerdients;

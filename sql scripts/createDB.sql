@@ -89,6 +89,7 @@ CREATE TABLE
     recipe_family(
         family_id INT,
         recipe_id INT,
+        data TEXT,
         PRIMARY KEY (family_id, recipe_id),
         FOREIGN KEY (family_id) REFERENCES family(family_id),
         FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id)

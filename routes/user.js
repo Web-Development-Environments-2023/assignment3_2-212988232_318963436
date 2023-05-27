@@ -5,8 +5,6 @@ const user_utils = require("./utils/user_utils");
 const recipes_utils = require("./utils/recipes_utils");
 const family = require("./family");
 
-router.use("/family", family);
-
 /**
  * Authenticate all incoming requests by middleware
  */
@@ -25,6 +23,7 @@ router.use(async function (req, res, next) {
   }
 });
 
+router.use("/family", family);
 /**
  * This path returns the favorites recipes that were saved by the logged-in user
  */
@@ -123,6 +122,21 @@ router.get("/random", async (req, res, next) => {
       req.session.user_id
     );
     res.send(recipes);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/ingerdients", async (req, res, next) => {
+  try {
+    name = req.query.name;
+    number = req.query.number;
+    const ingredients = await user_utils.getIngerdients(name, number);
+    console.log(ingredients, "ingredients");
+    if (ingredients.results.length == 0) {
+      throw { status: 404, message: "There are no ingredient with this name" };
+    }
+    res.send(ingredients.results);
   } catch (error) {
     next(error);
   }

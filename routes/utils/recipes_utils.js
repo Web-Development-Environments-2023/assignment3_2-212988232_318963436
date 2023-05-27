@@ -41,6 +41,13 @@ async function getRecipeFullDetails(recipe_id, user_id) {
       },
     }
   );
+
+  try {
+    steps = recipe_analyzedInstructions.data[0].steps;
+    ingredients = recipe_ingrediants.data.ingredients;
+  } catch (error) {
+    steps = [];
+  }
   recipe_full_info = {
     id: recipe_info.id,
     title: recipe_info.title,
@@ -53,8 +60,8 @@ async function getRecipeFullDetails(recipe_id, user_id) {
     favorite: recipe_info.favorite,
     servings: recipe_info.servings,
     seen: recipe_info.seen,
-    instructions: recipe_analyzedInstructions.data[0].steps,
-    ingredients: recipe_ingrediants.data.ingredients,
+    instructions: steps,
+    ingredients: ingredients,
   };
   return recipe_full_info;
 }
@@ -116,7 +123,7 @@ async function randomRecipes(query, user_id) {
   });
   let recipes = [];
   for (let recipe of recipes_info.data.recipes) {
-    recipes.push(getPreviewInformation(recipe));
+    recipes.push(getPreviewInformation(recipe, user_id));
   }
   return await Promise.all(recipes);
 }
@@ -172,7 +179,16 @@ async function getPreviewInformation(recipe, user_id) {
   };
 }
 
+async function getRecipesInfo(recipes_id_array) {
+  recipes_id_array = recipes_id_array.map((recipe) => recipe.recipe_id);
+  recipes = await DButils.execQuery(
+    `select * from recipes where recipe_id in (${recipes_id_array})`
+  );
+  return recipes;
+}
+
 exports.getRecipesPreview = getRecipesPreview;
 exports.searchByName = searchByName;
 exports.randomRecipes = randomRecipes;
 exports.getRecipeFullDetails = getRecipeFullDetails;
+exports.getRecipesInfo = getRecipesInfo;
