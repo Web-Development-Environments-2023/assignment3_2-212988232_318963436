@@ -25,6 +25,7 @@ CREATE TABLE
         vegan BOOLEAN,
         glutenfree BOOLEAN,
         recipe_date DATE,
+        numberOfServings INT,
         user_id INT,
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     );

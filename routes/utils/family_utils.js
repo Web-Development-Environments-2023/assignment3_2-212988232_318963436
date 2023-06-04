@@ -40,8 +40,11 @@ async function getMyFamilis(user_id) {
   return familis;
 }
 async function searchFamily(family_name) {
+  // const familis = await DButils.execQuery(
+  //   `select * from family where lower(name) like lower('${family_name}%')`
+  // );
   const familis = await DButils.execQuery(
-    `select * from family where lower(name) like lower('${family_name}%')`
+    `select family_id,name against(${family_name} in boolean mode) as score from family`
   );
   return familis;
 }

@@ -14,344 +14,17 @@ servers:
   - url: http://127.0.0.1:3000
     description: SwaggerHub API Auto Mocking
 tags:
+  - name: auth
+    description: Operations to manage authentication
   - name: user
     description: Operations to manage users
   - name: recipe
     description: Operations to manage recipes
-  - name: auth
-    description: Operations to manage authentication
+  - name: family
+    description: Operations to manage family
 
 paths:
-  /users/createRecipe:
-    post:
-      tags:
-        - user
-      summary: Create new recipe
-      description: This can only be done by the logged in user.
-      operationId: createRecipe
-      requestBody:
-        description: Recipe object that needs to be added to the store
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipe"
-        required: true
-      responses:
-        "201":
-          description: Recipe created
-        "400":
-          description: Invalid input
-  /users/getRecipes:
-    get:
-      tags:
-        - user
-      summary: Get all recipes
-      description: Returns all recipes
-      operationId: getRecipes
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Recipe"
-        "400":
-          description: There are no recipes
-
-  /users/deleteRecipe:
-    delete:
-      tags:
-        - user
-      summary: Delete recipe by ID
-      description: Delete a single recipe
-      operationId: deleteRecipeById
-      requestBody:
-        description: RecipeID that needs to be deleted
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipeid"
-
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-
-  /users/updateRecipe:
-    put:
-      tags:
-        - user
-      summary: Update recipe by ID
-      description: Update a single recipe
-      operationId: updateRecipeById
-      requestBody:
-        description: Recipe object that needs to be updated
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipe"
-
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-
-  /users/setFavoriteRecipe:
-    post:
-      tags:
-        - user
-      summary: Set favorite recipe by ID
-      description: Set a single recipe as favorite
-      operationId: setFavoriteRecipeById
-      requestBody:
-        description: RecipeID that needs to be set as favorite
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipeid"
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-
-  /users/unsetFavoriteRecipe:
-    post:
-      tags:
-        - user
-      summary: Unset favorite recipe by ID
-      description: Unset a single recipe as favorite
-      operationId: unsetFavoriteRecipeById
-      requestBody:
-        description: RecipeID that needs to be unset as favorite
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipeid"
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-  /users/markAsLike:
-    post:
-      tags:
-        - user
-      summary: Mark recipe as like by ID
-      description: Mark a single recipe as like
-      operationId: markAsLikeById
-      requestBody:
-        description: RecipeID that needs to be marked as like
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipeid"
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-  /users/unmarkAsLike:
-    post:
-      tags:
-        - user
-      summary: Unmark recipe as like by ID
-      description: Unmark a single recipe as like
-      operationId: unmarkAsLikeById
-      requestBody:
-        description: RecipeID that needs to be unmarked as like
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipeid"
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-  /users/getFavoriteRecipes:
-    get:
-      tags:
-        - user
-      summary: Get all favorite recipes
-      description: Returns all favorite recipes
-      operationId: getFavoriteRecipes
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Recipe"
-        "400":
-          description: There are no favorite recipes
-  /users/setSeenRecipe:
-    post:
-      tags:
-        - user
-      summary: Set seen recipe by ID
-      description: Set a single recipe as seen
-      operationId: setSeenRecipeById
-      requestBody:
-        description: RecipeID that needs to be set as seen
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Recipeid"
-        required: true
-      responses:
-        "200":
-          description: successful operation
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-  /users/getSeenRecipes:
-    get:
-      tags:
-        - user
-      summary: Get all seen recipes
-      description: Returns all seen recipes
-      operationId: getSeenRecipes
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Recipe"
-        "400":
-          description: There are no seen recipes
-  /recipe/getNRandomRecipes{numOfRecipes}:
-    get:
-      tags:
-        - recipe
-      summary: Get N random recipes
-      description: Returns N random recipes
-      operationId: getNRandomRecipes
-      parameters:
-        - name: numOfRecipes
-          in: path
-          description: number of recipes to return
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: integer
-            example: 5
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                description: The recipe objects that was found
-                items:
-                  $ref: "#/components/schemas/Recipe"
-        "400":
-          description: Invalid name supplied
-        "404":
-          description: Recipe not found
-
-  /recipe/getRecipeByName/{recipeName}/{numOfRecipes}:
-    get:
-      tags:
-        - recipe
-      summary: Get recipe by name
-      description: Returns a single recipe
-      operationId: getRecipeByName
-      parameters:
-        - name: recipeName
-          in: path
-          description: name of recipe to return
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: string
-        - name: numOfRecipes
-          in: path
-          description: number of recipes to return
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: integer
-            example: 5
-            enum:
-              - 5
-              - 10
-              - 15
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                description: The recipe objects that was found
-                items:
-                  $ref: "#/components/schemas/Recipe"
-        "400":
-          description: Invalid name supplied
-        "404":
-          description: Recipe not found
-  /recipe/getRecipe{recipeId}:
-    get:
-      tags:
-        - recipe
-      summary: Get recipe by ID
-      description: Returns a single recipe
-      operationId: getRecipeById
-      parameters:
-        - name: recipeId
-          in: path
-          description: ID of recipe to return
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Recipe"
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Recipe not found
-  /Login:
+  /login:
     post:
       tags:
         - auth
@@ -367,18 +40,10 @@ paths:
         required: true
       responses:
         "200":
-          description: "Login successful, The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests."
-          headers:
-            Set-Cookie:
-              style: simple
-              explode: false
-              schema:
-                type: string
-                description: The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests.
-                example: JSESSIONID=123456789; Path=/; HttpOnly
-        "400":
-          description: Invalid username/password supplied
-  /Register:
+          description: "Login successful"
+        "404":
+          description: Invalid input
+  /register:
     post:
       tags:
         - auth
@@ -406,14 +71,570 @@ paths:
       operationId: logoutUser
       responses:
         "200":
+          description: logged out successful
+
+  /users/favorite:
+    post:
+      tags:
+        - user
+      summary: Add recipe to favorites
+      description: Add recipe to favorites
+      operationId: addRecipeToFavorites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipe_id:
+                  type: integer
+                  format: int64
+                  example: 654959
+                isFav:
+                  type: boolean
+                  example: true
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+    get:
+      tags:
+        - user
+      summary: Get all favorite recipes
+      description: Returns all favorite recipes
+      operationId: getFavoriteRecipes
+      responses:
+        "200":
           description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: There are no favorite recipes
+  /users/myRecipes:
+    get:
+      tags:
+        - user
+      summary: Get all user recipes
+      description: Returns all user recipes
+      operationId: getUserRecipes
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: There are no user recipes
+    post:
+      tags:
+        - user
+      summary: Add recipe
+      description: Add recipe
+      operationId: addRecipe
+      requestBody:
+        description: Recipe object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipe"
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid input
+  /users/search:
+    get:
+      tags:
+        - user
+      summary: Search recipes
+      description: Search recipes
+      operationId: searchRecipes
+      parameters:
+        - name: name
+          in: query
+          description: search string
+          example: Falafel
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: query
+          description: number of recipes to return
+          example: 10
+          required: false
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: Invalid input
+
+  /users/random:
+    get:
+      tags:
+        - user
+      summary: Get random recipes
+      description: Get random recipes
+      operationId: getRandomRecipes
+      parameters:
+        - name: number
+          in: query
+          description: number of recipes to return
+          example: 10
+          required: false
+          schema:
+            type: integer
+            default: 3
+            minimum: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: Invalid input
+  /users/recipe/{recipeId}:
+    get:
+      tags:
+        - user
+      summary: Get recipe by ID
+      description: Get recipe by ID
+      operationId: getRecipeById
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of recipe to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /users/seen:
+    get:
+      tags:
+        - user
+      summary: Get last  3 seen recipes
+      description: Get last  3 seen recipes
+      operationId: getSeenRecipes
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+
+  /users/ingerdients:
+    get:
+      tags:
+        - user
+      summary: search for ingredient by name
+      description: search for ingredient by name
+      operationId: searchIngredients
+      parameters:
+        - name: name
+          in: query
+          description: search string
+          example: tomato
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: query
+          description: number of ingredients to return
+          example: 5
+          required: false
+          schema:
+            type: integer
+            default: 3
+            minimum: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ingredient"
+        "400":
+          description: Invalid input
+
+  /users/recipe:
+    get:
+      tags:
+        - user
+      summary: get recipe of user
+      description: get recipe of user
+      operationId: getRecipeOfUser
+      parameters:
+        - name: recipe_id
+          in: query
+          description: ID of recipe to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+
+  /users/family/recipe:
+    get:
+      tags:
+        - family
+      summary: get recipe of family
+      description: get recipe of family
+      operationId: getRecipeOfFamily
+      parameters:
+        - name: recipe_id
+          in: query
+          description: ID of recipe to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: family_id
+          in: query
+          description: ID of family to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+  /users/family/search:
+    get:
+      tags:
+        - family
+
+      summary: search for family by name
+      description: search for family by name
+      operationId: searchFamily
+      parameters:
+        - name: family_name
+          in: query
+          description: search string
+          example: Azulay
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Family"
+        "400":
+          description: Invalid input
+
+  /users/family/recipes:
+    get:
+      tags:
+        - family
+
+      summary: Get all family recipes
+      description: Returns all family recipes
+      operationId: getFamilyRecipes
+      parameters:
+        - name: family_id
+          in: query
+          description: ID of family to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: There are no family recipes
+  /users/family/members:
+    get:
+      tags:
+        - family
+
+      summary: Get all family members
+      description: Returns all family members
+      operationId: getFamilyMembers
+      parameters:
+        - name: family_id
+          in: query
+          description: ID of family to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserPreview"
+        "400":
+          description: There are no family members
+  /users/family/recipes/add:
+    post:
+      tags:
+        - family
+
+      summary: Add member to family
+      description: Add member to family
+      operationId: addMemberToFamily
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                family_id:
+                  type: integer
+                  example: 1
+                  description: ID of family to return
+                isAdd:
+                  type: boolean
+                  example: true
+                  description: true if add, false if remove
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid input
+
+  /users/family/myfamilies:
+    get:
+      tags:
+        - family
+
+      summary: Get all user families
+      description: Returns all user families
+      operationId: getUserFamilies
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    family_name:
+                      type: string
+                      example: Azulay
+                      description: name of family
+                    family_id:
+                      type: integer
+                      example: 1
+                      description: ID of family
+        "400":
+          description: There are no user families
+
+  /users/family/create:
+    post:
+      tags:
+        - family
+
+      summary: Create new family
+      description: Create new family
+      operationId: createFamily
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Family"
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid input
+  /users/family/recipes/addrecipe:
+    post:
+      tags:
+        - family
+      summary: Add recipe to family
+      description: Add recipe to family
+      operationId: addRecipeToFamily
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FamilyRecipe"
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid input
+  /recipes/random:
+    get:
+      tags:
+        - recipe
+      summary: Get random recipes
+      description: Get random recipes
+      operationId: getRandomRecipes
+      parameters:
+        - name: number
+          in: query
+          description: number of recipes to return
+          example: 5
+          required: false
+          schema:
+            type: integer
+            default: 3
+            minimum: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: Invalid input
+  /recipes/search:
+    get:
+      tags:
+        - recipe
+      summary: search for recipe by name
+      description: search for recipe by name
+      operationId: searchRecipes
+      parameters:
+        - name: query
+          in: query
+          description: search string
+          example: pasta
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: query
+          description: number of recipes to return
+          example: 5
+          required: false
+          schema:
+            type: integer
+            default: 3
+            minimum: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PreviewRecipe"
+        "400":
+          description: Invalid input
+  /recipes/{recipeId}:
+    get:
+      tags:
+        - recipe
+      summary: Get recipe by ID
+      description: Get recipe by ID
+      operationId: getRecipeById
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of recipe to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Recipe not found
+
 components:
   schemas:
     Recipeid:
       required:
-        - recipeId
+        - recipe_id
       properties:
-        recipeId:
+        recipe_id:
           description: Recipe ID
           type: integer
           format: int64
@@ -421,17 +642,20 @@ components:
     PreviewRecipe:
       required:
         - glutenFree
-        - image
-        - likes
-        - name
+        - imageURL
+        - title
         - readyInMinutes
-        - vegiterianLevel
+        - vegiterian
+        - vegan
+        - favorite
+        - seen
       type: object
       properties:
-        image:
+        imageURL:
           type: object
           description: image of the recipe
-        name:
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        title:
           type: string
           description: name of the recipe
           example: Falafel
@@ -440,22 +664,25 @@ components:
           type: integer
           description: time to cook in minutes
           example: 20
-        likes:
-          minimum: 0
-          type: integer
-          description: number of likes of the recipe
-          example: 20
-        vegiterianLevel:
-          type: string
-          description: "vegiterian, vegan, non vegiterian"
-          example: vegiterian
-          enum:
-            - vegiterian
-            - non vegiterian
-            - vegan
+        vegan:
+          type: boolean
+          description: is the recipe vegan
+          example: true
+        vegiterian:
+          type: boolean
+          description: is the recipe vegiterian
+          example: true
         glutenFree:
           type: boolean
           description: is the recipe gluten free
+          example: true
+        favorite:
+          type: boolean
+          description: is the recipe favorite
+          example: true
+        seen:
+          type: boolean
+          description: is the recipe seen
           example: true
       description: preview details of the recipe
     Recipe:
@@ -467,49 +694,60 @@ components:
         - steps
       type: object
       properties:
-        recipeId:
-          minimum: 0
-          type: integer
-          description: id of the recipe
-          example: 1
-        previewDetails:
-          $ref: "#/components/schemas/PreviewRecipe"
-        ingredients:
-          $ref: "#/components/schemas/Ingredients"
-        steps:
-          type: array
-          items:
-            $ref: "#/components/schemas/Recipe_steps"
-        numberOfServings:
-          minimum: 1
-          type: integer
-          description: number of servings
-          example: 4
+        recipe:
+          type: object
+          properties:
+            previewDetails:
+              $ref: "#/components/schemas/PreviewRecipe"
+            ingredients:
+              $ref: "#/components/schemas/Ingredients"
+            steps:
+              type: array
+              items:
+                $ref: "#/components/schemas/Recipe_steps"
+            numberOfServings:
+              minimum: 1
+              type: integer
+              description: number of servings
+              example: 4
+
     Ingredient:
       required:
         - name
+        - ingredient_id
+        - imageURL
+
       type: object
       properties:
         name:
           type: string
           description: name of the ingredient
           example: tomato
+        ingredient_id:
+          minimum: 0
+          type: integer
+          description: id of the ingredient
+          example: 1
+        imageURL:
+          type: string
+          description: image name of the ingredient
+          example: tomato.jpg
     Ingredients:
       required:
-        - listIngredients
+        - ingredients
       type: object
       properties:
-        listIngredients:
+        ingredients:
           type: array
           items:
-            $ref: "#/components/schemas/Ingredients_listIngredients"
+            $ref: "#/components/schemas/Ingredient"
     Step:
       required:
         - description
-        - stepNumber
+        - step_number
       type: object
       properties:
-        stepNumber:
+        step_number:
           minimum: 1
           type: integer
           description: number of the step
@@ -518,6 +756,15 @@ components:
           type: string
           description: step of the recipe
           example: Cook the rice for 20 minutes
+    isFavorite:
+      required:
+        - isFav
+      type: object
+      properties:
+        isFav:
+          type: boolean
+          description: add or remove from favorites
+          example: true
     User:
       required:
         - country
@@ -534,11 +781,11 @@ components:
           type: string
           description: username of the user
           example: IsrealIsreali
-        firstName:
+        firstname:
           type: string
           description: first name of the user
           example: Isreal
-        lastName:
+        lastname:
           type: string
           description: last name of the user
           example: Isreali
@@ -564,6 +811,35 @@ components:
           description: seen recipes of the user
           items:
             $ref: "#/components/schemas/User_favoriteRecipes"
+    UserPreview:
+      required:
+        - country
+        - firstname
+        - lastname
+        - username
+        - email
+      type: object
+      properties:
+        username:
+          type: string
+          description: username of the user
+          example: IsrealIsreali
+        firstname:
+          type: string
+          description: first name of the user
+          example: Isreal
+        lastname:
+          type: string
+          description: last name of the user
+          example: Isreali
+        country:
+          type: string
+          description: country of the user
+          example: Isreal
+        email:
+          type: string
+          description: email of the user
+          example: bla@email.com
     UserLogin:
       required:
         - password
@@ -582,8 +858,8 @@ components:
       required:
         - country
         - email
-        - firstName
-        - lastName
+        - firstname
+        - lastname
         - password
         - username
       type: object
@@ -592,11 +868,11 @@ components:
           type: string
           description: username of the user
           example: IsrealIsreali
-        firstName:
+        firstname:
           type: string
           description: first name of the user
           example: Isreal
-        lastName:
+        lastname:
           type: string
           description: last name of the user
           example: Isreali
@@ -629,3 +905,44 @@ components:
       properties:
         recipe:
           $ref: "#/components/schemas/PreviewRecipe"
+    Family:
+      required:
+        - family_id
+        - family_name
+      type: object
+      properties:
+        family_id:
+          minimum: 0
+          type: integer
+          description: id of the family
+          example: 1
+        family_name:
+          type: string
+          description: name of the family
+          example: Azulay
+    FamilyRecipe:
+      required:
+        - family_id
+        - recipe_id
+        - data
+        - isAdd
+      type: object
+      properties:
+        family_id:
+          minimum: 0
+          type: integer
+          description: id of the family
+          example: 1
+        recipe_id:
+          minimum: 0
+          type: integer
+          description: id of the recipe
+          example: 1
+        data:
+          type: string
+          description: data about the recipe
+          example: this recipe done in holidays
+        isAdd:
+          type: boolean
+          description: add or remove the recipe
+          example: true

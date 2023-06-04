@@ -105,4 +105,24 @@ router.post("/addrecipe", async (req, res, next) => {
   }
 });
 
+router.get("/recipe", async (req, res, next) => {
+  try {
+    let user_id = req.session.user_id;
+    let recipe_id = req.query.recipe_id;
+    let family_id = req.query.family_id;
+    let result = await DButils.execQuery(
+      `select * from family_recipes where recipe_id = '${recipe_id}'and family_id = '${family_id}'`
+    );
+    assert(result.length > 0, "The recipe does not exist");
+    result = await DButils.execQuery(
+      `select * from user_family where user_id = '${user_id}'and family_id = '${family_id}'`
+    );
+    assert(result.length > 0, "The recipe does not exist");
+    let recipe = user_utils.getRecipe(recipe_id);
+    res.send(recipe);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

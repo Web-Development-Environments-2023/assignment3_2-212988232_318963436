@@ -58,7 +58,7 @@ router.post("/favorite", async (req, res, next) => {
   }
 });
 
-router.get("/mine", async (req, res, next) => {
+router.get("/myRecipes", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
     const recipes = await user_utils.getMyRecipes(user_id);
@@ -89,7 +89,7 @@ router.get("/seen", async (req, res, next) => {
  * This path set the recipe as seen by the user.
  */
 
-router.post("/mine", async (req, res, next) => {
+router.post("/myRecipes", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
     const recipe = req.body.recipe;
@@ -142,6 +142,20 @@ router.get("/ingerdients", async (req, res, next) => {
   }
 });
 
+router.get("/recipe", async (req, res, next) => {
+  try {
+    let user_id = req.session.user_id;
+    let recipe_id = req.query.recipe_id;
+    let result = DButils.execQuery(
+      `SELECT * FROM recipes  WHERE recipe_id = ${recipe_id}  and user_id = ${user_id}`
+    );
+    assert(result.length > 0, "The recipe does not exist");
+    let recipe = user_utils.getRecipe(recipe_id);
+    res.send(recipe);
+  } catch (error) {
+    next(error);
+  }
+});
 /**
  * This path returns a full details of a recipe by its id
  */

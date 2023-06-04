@@ -31,9 +31,10 @@ async function getMyRecipes(user_id) {
 async function createRecipe(user_id, recipe) {
   let { name, imageURL, readyInMinutes, vegiterian, vegan, glutenfree } =
     recipe.previewDetails;
+  let numberOfServings = recipe.numberOfServings;
 
-  let query = `INSERT INTO recipes (name, imageURL, readyInMinutes, vegiterian, vegan, glutenfree, recipe_date, user_id)
-             VALUES ('${name}', '${imageURL}', '${readyInMinutes}', ${vegiterian}, ${vegan}, ${glutenfree}, CURDATE(), '${user_id}');`;
+  let query = `INSERT INTO recipes (name, imageURL, readyInMinutes, vegiterian, vegan, glutenfree, recipe_date,numberOfServings, user_id)
+             VALUES ('${name}', '${imageURL}', '${readyInMinutes}', ${vegiterian}, ${vegan}, ${glutenfree}, CURDATE(),${numberOfServings} ,'${user_id}');`;
 
   let result = await DButils.execQuery(query);
   let recipe_id = result.insertId;
@@ -100,6 +101,24 @@ async function getIngerdients(name, number) {
   return ingredients.data;
 }
 
+async function getRecipe(recipe_id) {
+  const previewDetails = await DButils.execQuery(
+    `select * from recipes where recipe_id='${recipe_id}'`
+  );
+  const ingredients = await DButils.execQuery(
+    `select * from recipe_ingredients where recipe_id='${recipe_id}'`
+  );
+  const steps = await DButils.execQuery(
+    `select * from steps where recipe_id='${recipe_id}'`
+  );
+  recipe = {
+    previewDetails: previewDetails,
+    ingredients: ingredients,
+    steps: steps,
+  };
+  return recipe;
+}
+
 exports.favorite = favorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.getMyRecipes = getMyRecipes;
@@ -107,3 +126,4 @@ exports.createRecipe = createRecipe;
 exports.getThreeLastSeens = getThreeLastSeens;
 exports.setseen = setseen;
 exports.getIngerdients = getIngerdients;
+exports.getRecipe = getRecipe;
