@@ -4,6 +4,7 @@ const DButils = require("./utils/DButils");
 const user_utils = require("./utils/user_utils");
 const recipes_utils = require("./utils/recipes_utils");
 const family_utils = require("./utils/family_utils");
+const assert = require("assert");
 
 router.get("/", (req, res) => res.send("im here"));
 
@@ -22,13 +23,22 @@ router.get("/search", async (req, res, next) => {
 
 router.get("/recipes", async (req, res, next) => {
   try {
-    //TODO: check if the user is a member of the family!
+    const user_id = req.session.user_id;
     const family_id = req.query.family_id;
+    //TODO: check if the user is a member of the family!
+
+    let check = await DButils.execQuery(
+      `SELECT * FROM user_family WHERE user_id = ${user_id} and family_id = ${family_id}`
+    );
+    assert(check.length !== 0, "The user is not a member of the family");
+
     const recipe_ids = await family_utils.getFamilyRecipes(family_id);
+
     if (recipe_ids.length == 0) {
       throw { status: 404, message: "There are no recipes in this family" };
     }
-    const recipes = await recipes_utils.getRecipesInfo(recipe_ids);
+    const recipes = await family_utils.getFamilyRecipesInfo(recipe_ids);
+
     res.send(recipes);
   } catch (error) {
     next(error);
@@ -71,7 +81,7 @@ router.post("/create", async (req, res, next) => {
     next(error);
   }
 });
-router.get("/myFamilis", async (req, res, next) => {
+router.get("/myFamilies", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
     const family_ids = await family_utils.getMyFamilis(user_id);
@@ -95,11 +105,14 @@ router.post("/addrecipe", async (req, res, next) => {
     check = await DButils.execQuery(
       `select * from recipes where recipe_id = '${recipe_id}'and user_id = '${user_id}'`
     );
-    if (check.length == 0) {
-      throw { status: 404, message: "not find recipe" };
-    }
-    //TODO: check if the user is a member of the family!
+    assert(check.length > 0, "The recipe does not exist");
+    check = await DButils.execQuery(
+      `select * from user_family where user_id = '${user_id}'and family_id = '${family_id}'`
+    );
+    assert(check.length > 0, "The user is not a member of the family");
+
     await family_utils.createFamilyRecipe(family_id, recipe_id, data, isAdd);
+    res.status(201).send("The recipe was added successfully to the family");
   } catch (error) {
     next(error);
   }
@@ -111,14 +124,14 @@ router.get("/recipe", async (req, res, next) => {
     let recipe_id = req.query.recipe_id;
     let family_id = req.query.family_id;
     let result = await DButils.execQuery(
-      `select * from family_recipes where recipe_id = '${recipe_id}'and family_id = '${family_id}'`
+      `select * from recipe_family where recipe_id = '${recipe_id}'and family_id = '${family_id}'`
     );
     assert(result.length > 0, "The recipe does not exist");
     result = await DButils.execQuery(
       `select * from user_family where user_id = '${user_id}'and family_id = '${family_id}'`
     );
     assert(result.length > 0, "The recipe does not exist");
-    let recipe = user_utils.getRecipe(recipe_id);
+    let recipe = await user_utils.getRecipe(recipe_id);
     res.send(recipe);
   } catch (error) {
     next(error);

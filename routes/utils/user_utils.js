@@ -6,7 +6,7 @@ const axios = require("axios");
 async function favorite(user_id, recipe_id, isfav) {
   if (isfav) {
     await DButils.execQuery(
-      `insert into favorites values ('${user_id}',${recipe_id},CURDATE())`
+      `insert ignore into favorites values ('${user_id}',${recipe_id},CURDATE())`
     );
   } else {
     await DButils.execQuery(
@@ -41,34 +41,39 @@ async function createRecipe(user_id, recipe) {
 
   let steps = recipe.steps;
   let ingredients = recipe.ingredients;
+  let steps_values = [];
+  steps.forEach((step) => {
+    steps_values.push([recipe_id, step.step_number, step.description]);
+  });
 
-  steps.forEach(async (step) => {
-    await DButils.execQuery(
-      `INSERT INTO steps (recipe_id, step_number, description) values ('${recipe_id}','${step.step_number}','${steps.description}')`
-    );
+  await DButils.execQuerywithvals(
+    `INSERT INTO steps (recipe_id, step_number, description) values ?`,
+    [steps_values]
+  );
+
+  let ingredients_values = [];
+  let ingredients_recipe_values = [];
+  ingredients.forEach((ingredient) => {
+    ingredients_values.push([
+      ingredient.ingredient_id,
+      ingredient.name,
+      ingredient.imageURL,
+    ]);
+    ingredients_recipe_values.push([
+      recipe_id,
+      ingredient.ingredient_id,
+      ingredient.amount,
+      ingredient.units,
+    ]);
   });
-  ingredients.forEach(async (ingredient) => {
-    console.log(ingredient, "ingredient");
-    try {
-      await DButils.execQuery(
-        `INSERT INTO ingredients (ingredient_id,name, imageURL) values ('${ingredient.ingredient_id}','${ingredient.name}','${ingredient.imageURL}')`
-      ).then(async () => {
-        await DButils.execQuery(
-          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, units) values ('${recipe_id}','${ingredient.ingredient_id}','${ingredient.amount}','${ingredient.units}')`
-        );
-      });
-    } catch (error) {
-      if (error.code === "ER_DUP_ENTRY" && error.errno === 1062) {
-        await DButils.execQuery(
-          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, units) values ('${recipe_id}','${ingredient.ingredient_id}','${ingredient.amount}','${ingredient.units}')`
-        );
-      } else {
-        console.log("An error occurred:", error);
-        throw error;
-      }
-      //ingredient already exists
-    }
-  });
+  await DButils.execQuerywithvals(
+    `INSERT IGNORE INTO ingredients (ingredient_id,name, imageURL) values ?`,
+    [ingredients_values]
+  );
+  await DButils.execQuerywithvals(
+    `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, amount, units) values ?`,
+    [ingredients_recipe_values]
+  );
 }
 
 async function getThreeLastSeens(user_id) {
@@ -111,10 +116,13 @@ async function getRecipe(recipe_id) {
   const steps = await DButils.execQuery(
     `select * from steps where recipe_id='${recipe_id}'`
   );
+
   recipe = {
-    previewDetails: previewDetails,
-    ingredients: ingredients,
-    steps: steps,
+    recipe: {
+      previewDetails: previewDetails,
+      ingredients: ingredients,
+      steps: steps,
+    },
   };
   return recipe;
 }

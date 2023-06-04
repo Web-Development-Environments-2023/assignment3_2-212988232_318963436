@@ -4,6 +4,7 @@ const DButils = require("./utils/DButils");
 const user_utils = require("./utils/user_utils");
 const recipes_utils = require("./utils/recipes_utils");
 const family = require("./family");
+const assert = require("assert");
 
 /**
  * Authenticate all incoming requests by middleware
@@ -74,7 +75,7 @@ router.get("/seen", async (req, res, next) => {
     const recipes_id = await user_utils.getThreeLastSeens(user_id);
     let recipes_id_array = [];
     recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
-    console.log(recipes_id_array, "recipes_id_array");
+
     const results = await recipes_utils.getRecipesPreview(
       recipes_id_array,
       user_id
@@ -132,7 +133,7 @@ router.get("/ingerdients", async (req, res, next) => {
     name = req.query.name;
     number = req.query.number;
     const ingredients = await user_utils.getIngerdients(name, number);
-    console.log(ingredients, "ingredients");
+
     if (ingredients.results.length == 0) {
       throw { status: 404, message: "There are no ingredient with this name" };
     }
@@ -146,11 +147,12 @@ router.get("/recipe", async (req, res, next) => {
   try {
     let user_id = req.session.user_id;
     let recipe_id = req.query.recipe_id;
-    let result = DButils.execQuery(
+    let result = await DButils.execQuery(
       `SELECT * FROM recipes  WHERE recipe_id = ${recipe_id}  and user_id = ${user_id}`
     );
-    assert(result.length > 0, "The recipe does not exist");
-    let recipe = user_utils.getRecipe(recipe_id);
+
+    assert(result.length !== 0, "The recipe does not exist");
+    let recipe = await user_utils.getRecipe(recipe_id);
     res.send(recipe);
   } catch (error) {
     next(error);

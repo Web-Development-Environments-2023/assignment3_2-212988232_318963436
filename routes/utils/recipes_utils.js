@@ -89,7 +89,7 @@ async function getRecipesPreview(recipes_id_array, user_id) {
 async function searchByName(query, user_id) {
   let { name, cuisine, diet, intolerances, number } = query;
   number = number || 5;
-  console.log(name, cuisine, diet, intolerances, number);
+
   let recipes = await axios.get(`${api_domain}/complexSearch`, {
     params: {
       query: name,

@@ -63,7 +63,7 @@ paths:
         "400":
           description: Invalid input
   /Logout:
-    get:
+    post:
       tags:
         - auth
       summary: Logs out current logged in user session
@@ -87,11 +87,11 @@ paths:
             schema:
               type: object
               properties:
-                recipe_id:
+                recipeId:
                   type: integer
                   format: int64
                   example: 654959
-                isFav:
+                isfav:
                   type: boolean
                   example: true
       responses:
@@ -147,7 +147,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Recipe"
+              $ref: "#/components/schemas/InsertRecipe"
         required: true
       responses:
         "200":
@@ -218,7 +218,7 @@ paths:
                   $ref: "#/components/schemas/PreviewRecipe"
         "400":
           description: Invalid input
-  /users/recipe/{recipeId}:
+  /users/{recipeId}:
     get:
       tags:
         - user
@@ -294,7 +294,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Ingredient"
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      example: 1
+                    name:
+                      type: string
+                      example: tomato
+                    image:
+                      type: string
+                      example: tomato.jpg
+
         "400":
           description: Invalid input
 
@@ -414,7 +425,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PreviewRecipe"
+                  $ref: "#/components/schemas/PreviewRecipeFamily"
         "400":
           description: There are no family recipes
   /users/family/members:
@@ -445,7 +456,7 @@ paths:
                   $ref: "#/components/schemas/UserPreview"
         "400":
           description: There are no family members
-  /users/family/recipes/add:
+  /users/family/add:
     post:
       tags:
         - family
@@ -520,7 +531,7 @@ paths:
           description: successful operation
         "400":
           description: Invalid input
-  /users/family/recipes/addrecipe:
+  /users/family/addrecipe:
     post:
       tags:
         - family
@@ -649,6 +660,7 @@ components:
         - vegan
         - favorite
         - seen
+        - numberOfServings
       type: object
       properties:
         imageURL:
@@ -684,7 +696,137 @@ components:
           type: boolean
           description: is the recipe seen
           example: true
+        numberOfServings:
+          type: integer
+          description: number of servings
+          example: 4
       description: preview details of the recipe
+    PreviewRecipeFamily:
+      required:
+        - glutenFree
+        - imageURL
+        - title
+        - readyInMinutes
+        - vegiterian
+        - vegan
+        - favorite
+        - seen
+        - family_id
+        - data
+        - numberOfServings
+      type: object
+      properties:
+        imageURL:
+          type: object
+          description: image of the recipe
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        title:
+          type: string
+          description: name of the recipe
+          example: Falafel
+        readyInMinutes:
+          minimum: 0
+          type: integer
+          description: time to cook in minutes
+          example: 20
+        vegan:
+          type: boolean
+          description: is the recipe vegan
+          example: true
+        vegiterian:
+          type: boolean
+          description: is the recipe vegiterian
+          example: true
+        glutenFree:
+          type: boolean
+          description: is the recipe gluten free
+          example: true
+        favorite:
+          type: boolean
+          description: is the recipe favorite
+          example: true
+        seen:
+          type: boolean
+          description: is the recipe seen
+          example: true
+        family_id:
+          type: integer
+          description: family id
+          example: 1
+        numberOfServings:
+          type: integer
+          description: number of servings
+          example: 4
+        data:
+          type: string
+          description: recipe data
+          example: this recipe made in holidays and it was very good
+      description: preview details of the recipe
+
+    InsertRecipeDetails:
+      required:
+        - glutenfree
+        - imageURL
+        - name
+        - readyInMinutes
+        - vegiterian
+        - vegan
+      type: object
+      properties:
+        imageURL:
+          type: object
+          description: image of the recipe
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        name:
+          type: string
+          description: name of the recipe
+          example: Falafel
+        readyInMinutes:
+          minimum: 0
+          type: integer
+          description: time to cook in minutes
+          example: 20
+        vegan:
+          type: boolean
+          description: is the recipe vegan
+          example: true
+        vegiterian:
+          type: boolean
+          description: is the recipe vegiterian
+          example: true
+        glutenfree:
+          type: boolean
+          description: is the recipe gluten free
+          example: true
+      description: insert details of the recipe
+    InsertRecipe:
+      required:
+        - recipeId
+        - ingredients
+        - numberOfServings
+        - previewDetails
+        - steps
+      type: object
+      properties:
+        recipe:
+          type: object
+          properties:
+            previewDetails:
+              $ref: "#/components/schemas/InsertRecipeDetails"
+            ingredients:
+              type: array
+              items:
+                $ref: "#/components/schemas/Ingredient"
+            steps:
+              type: array
+              items:
+                $ref: "#/components/schemas/Step"
+            numberOfServings:
+              minimum: 1
+              type: integer
+              description: number of servings
+              example: 4
+
     Recipe:
       required:
         - recipeId
@@ -700,11 +842,13 @@ components:
             previewDetails:
               $ref: "#/components/schemas/PreviewRecipe"
             ingredients:
-              $ref: "#/components/schemas/Ingredients"
+              type: array
+              items:
+                $ref: "#/components/schemas/Ingredient"
             steps:
               type: array
               items:
-                $ref: "#/components/schemas/Recipe_steps"
+                $ref: "#/components/schemas/Step"
             numberOfServings:
               minimum: 1
               type: integer
@@ -716,7 +860,8 @@ components:
         - name
         - ingredient_id
         - imageURL
-
+        - amount
+        - units
       type: object
       properties:
         name:
@@ -732,15 +877,16 @@ components:
           type: string
           description: image name of the ingredient
           example: tomato.jpg
-    Ingredients:
-      required:
-        - ingredients
-      type: object
-      properties:
-        ingredients:
-          type: array
-          items:
-            $ref: "#/components/schemas/Ingredient"
+        amount:
+          minimum: 0
+          type: integer
+          description: amount of the ingredient
+          example: 2
+        units:
+          type: string
+          description: units of the ingredient
+          example: kg
+
     Step:
       required:
         - description
@@ -758,10 +904,10 @@ components:
           example: Cook the rice for 20 minutes
     isFavorite:
       required:
-        - isFav
+        - isfav
       type: object
       properties:
-        isFav:
+        isfav:
           type: boolean
           description: add or remove from favorites
           example: true
@@ -888,10 +1034,7 @@ components:
           type: string
           description: email of the user
           example: bal@bla.com
-    Recipe_steps:
-      properties:
-        step:
-          $ref: "#/components/schemas/Step"
+
     Ingredients_listIngredients:
       properties:
         ingredient:
