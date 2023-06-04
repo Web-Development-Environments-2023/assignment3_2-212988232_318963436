@@ -44,7 +44,7 @@ async function searchFamily(family_name) {
   //   `select * from family where lower(name) like lower('${family_name}%')`
   // );
   const familis = await DButils.execQuery(
-    `select family_id,name against(${family_name} in boolean mode) as score from family`
+    `select family_id,name from family order by levenshtein(name,'${family_name}') limit 5`
   );
   return familis;
 }
