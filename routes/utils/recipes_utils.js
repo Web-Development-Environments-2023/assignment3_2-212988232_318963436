@@ -9,8 +9,8 @@ const DButils = require("./DButils");
  * @param {*} recipes_info
  */
 
-async function getRecipeInformation(recipe_id) {
-  return await axios.get(`${api_domain}/${recipe_id}/information`, {
+async function getRecipeInformation(id) {
+  return await axios.get(`${api_domain}/${id}/information`, {
     params: {
       includeNutrition: false,
       apiKey: process.env.spooncular_apiKey,
@@ -18,13 +18,13 @@ async function getRecipeInformation(recipe_id) {
   });
 }
 
-async function getRecipeFullDetails(recipe_id, user_id) {
-  recipe_info = await getRecipeInformation(recipe_id).then((res) => {
+async function getRecipeFullDetails(id, user_id) {
+  recipe_info = await getRecipeInformation(id).then((res) => {
     return getPreviewInformation(res.data, user_id);
   });
 
   recipe_analyzedInstructions = await axios.get(
-    `${api_domain}/${recipe_id}/analyzedInstructions`,
+    `${api_domain}/${id}/analyzedInstructions`,
     {
       params: {
         stepBreakdown: false,
@@ -33,7 +33,7 @@ async function getRecipeFullDetails(recipe_id, user_id) {
     }
   );
   recipe_ingrediants = await axios.get(
-    `${api_domain}/${recipe_id}/ingredientWidget.json`,
+    `${api_domain}/${id}/ingredientWidget.json`,
     {
       params: {
         includeNutrition: false,
@@ -73,8 +73,8 @@ async function getRecipeFullDetails(recipe_id, user_id) {
  */
 async function getRecipesPreview(recipes_id_array, user_id) {
   let promises = [];
-  for (let recipe_id of recipes_id_array) {
-    recipe_preview = await getRecipeInformation(recipe_id);
+  for (let id of recipes_id_array) {
+    recipe_preview = await getRecipeInformation(id);
     recipe_preview = await getPreviewInformation(recipe_preview.data, user_id);
     promises.push(recipe_preview);
   }
@@ -131,16 +131,16 @@ async function randomRecipes(query, user_id) {
 /**
  * This function gets a recipe id and returns the full information of the recipe
  *
- * @param {*} recipe_id  - the id of the recipe
+ * @param {*} id  - the id of the recipe
  * @param {*} user_id - the id of the user
  *
  */
-async function getUserRecipeInfo(recipe_id, user_id) {
+async function getUserRecipeInfo(id, user_id) {
   let favorite = await DButils.execQuery(
-    `select * from favorites where user_id='${user_id}' and recipe_id='${recipe_id}'`
+    `select * from favorites where user_id='${user_id}' and id='${id}'`
   );
   let seen = await DButils.execQuery(
-    `select * from seens where user_id='${user_id}' and recipe_id='${recipe_id}'`
+    `select * from seens where user_id='${user_id}' and id='${id}'`
   );
   favorite = favorite.length > 0;
   seen = seen.length > 0;
@@ -178,9 +178,9 @@ async function getPreviewInformation(recipe, user_id) {
 }
 
 async function getRecipesInfo(recipes_id_array) {
-  recipes_id_array = recipes_id_array.map((recipe) => recipe.recipe_id);
+  recipes_id_array = recipes_id_array.map((recipe) => recipe.id);
   recipes = await DButils.execQuery(
-    `select * from recipes where recipe_id in (${recipes_id_array})`
+    `select * from recipes where id in (${recipes_id_array})`
   );
   return recipes;
 }

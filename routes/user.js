@@ -33,7 +33,7 @@ router.get("/favorite", async (req, res, next) => {
     const user_id = req.session.user_id;
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+    recipes_id.map((element) => recipes_id_array.push(element.id)); //extracting the recipe ids into array
     const results = await recipes_utils.getRecipesPreview(
       recipes_id_array,
       user_id
@@ -50,9 +50,9 @@ router.get("/favorite", async (req, res, next) => {
 router.post("/favorite", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
-    const recipe_id = req.body.recipeId;
+    const id = req.body.recipeId;
     const isfav = req.body.isfav;
-    await user_utils.favorite(user_id, recipe_id, isfav);
+    await user_utils.favorite(user_id, id, isfav);
     res.status(200).send("The Recipe favorite successfully saved");
   } catch (error) {
     next(error);
@@ -74,7 +74,7 @@ router.get("/seen", async (req, res, next) => {
     const user_id = req.session.user_id;
     const recipes_id = await user_utils.getThreeLastSeens(user_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+    recipes_id.map((element) => recipes_id_array.push(element.id)); //extracting the recipe ids into array
 
     const results = await recipes_utils.getRecipesPreview(
       recipes_id_array,
@@ -146,13 +146,13 @@ router.get("/ingerdients", async (req, res, next) => {
 router.get("/recipe", async (req, res, next) => {
   try {
     let user_id = req.session.user_id;
-    let recipe_id = req.query.recipe_id;
+    let id = req.query.id;
     let result = await DButils.execQuery(
-      `SELECT * FROM recipes  WHERE recipe_id = ${recipe_id}  and user_id = ${user_id}`
+      `SELECT * FROM recipes  WHERE id = ${id}  and user_id = ${user_id}`
     );
 
     assert(result.length !== 0, "The recipe does not exist");
-    let recipe = await user_utils.getRecipe(recipe_id);
+    let recipe = await user_utils.getRecipe(id);
     res.send(recipe);
   } catch (error) {
     next(error);

@@ -56,15 +56,15 @@ async function getFamilisName(family_ids) {
   return familis;
 }
 
-async function createFamilyRecipe(family_id, recipe_id, data, isAdd) {
+async function createFamilyRecipe(family_id, id, data, isAdd) {
   try {
     if (isAdd) {
       await DButils.execQuery(
-        `INSERT INTO recipe_family (family_id,recipe_id,data) VALUES ('${family_id}','${recipe_id}','${data}')`
+        `INSERT INTO recipe_family (family_id,id,data) VALUES ('${family_id}','${id}','${data}')`
       );
     } else {
       await DButils.execQuery(
-        `DELETE FROM recipe_family WHERE family_id='${family_id}' and recipe_id='${recipe_id}'`
+        `DELETE FROM recipe_family WHERE family_id='${family_id}' and id='${id}'`
       );
     }
   } catch (error) {
@@ -78,15 +78,15 @@ async function createFamilyRecipe(family_id, recipe_id, data, isAdd) {
 
 async function getFamilyRecipes(family_id) {
   const recipes = await DButils.execQuery(
-    `select recipe_id from recipe_family where family_id='${family_id}'`
+    `select id from recipe_family where family_id='${family_id}'`
   );
   return recipes;
 }
 async function getFamilyRecipesInfo(recipes_id_array) {
-  recipes_id_array = recipes_id_array.map((recipe) => recipe.recipe_id);
+  recipes_id_array = recipes_id_array.map((recipe) => recipe.id);
 
   recipes = await DButils.execQuery(
-    `select * from recipes inner join recipe_family on recipes.recipe_id=recipe_family.recipe_id where recipes.recipe_id in (${recipes_id_array})`
+    `select * from recipes inner join recipe_family on recipes.id=recipe_family.id where recipes.id in (${recipes_id_array})`
   );
   return recipes;
 }

@@ -98,12 +98,12 @@ router.post("/addrecipe", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
     const family_id = req.body.family_id;
-    const recipe_id = req.body.recipe_id;
+    const id = req.body.id;
     const data = req.body.data;
     const isAdd = req.body.isAdd;
-    family_id, recipe_id, data, isAdd;
+    family_id, id, data, isAdd;
     check = await DButils.execQuery(
-      `select * from recipes where recipe_id = '${recipe_id}'and user_id = '${user_id}'`
+      `select * from recipes where id = '${id}'and user_id = '${user_id}'`
     );
     assert(check.length > 0, "The recipe does not exist");
     check = await DButils.execQuery(
@@ -111,7 +111,7 @@ router.post("/addrecipe", async (req, res, next) => {
     );
     assert(check.length > 0, "The user is not a member of the family");
 
-    await family_utils.createFamilyRecipe(family_id, recipe_id, data, isAdd);
+    await family_utils.createFamilyRecipe(family_id, id, data, isAdd);
     res.status(201).send("The recipe was added successfully to the family");
   } catch (error) {
     next(error);
@@ -121,17 +121,17 @@ router.post("/addrecipe", async (req, res, next) => {
 router.get("/recipe", async (req, res, next) => {
   try {
     let user_id = req.session.user_id;
-    let recipe_id = req.query.recipe_id;
+    let id = req.query.id;
     let family_id = req.query.family_id;
     let result = await DButils.execQuery(
-      `select * from recipe_family where recipe_id = '${recipe_id}'and family_id = '${family_id}'`
+      `select * from recipe_family where id = '${id}'and family_id = '${family_id}'`
     );
     assert(result.length > 0, "The recipe does not exist");
     result = await DButils.execQuery(
       `select * from user_family where user_id = '${user_id}'and family_id = '${family_id}'`
     );
     assert(result.length > 0, "The recipe does not exist");
-    let recipe = await user_utils.getRecipe(recipe_id);
+    let recipe = await user_utils.getRecipe(id);
     res.send(recipe);
   } catch (error) {
     next(error);
