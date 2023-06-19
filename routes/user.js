@@ -158,6 +158,26 @@ router.get("/recipe", async (req, res, next) => {
     next(error);
   }
 });
+
+/**
+ * This path delete recipe from the logged-in user
+ * example of call: http://localhost:3000/users/recipe/1
+  */
+
+router.delete("/recipe", async (req, res, next) => {
+  try {
+
+    const user_id = req.session.user_id;
+    const recipe_id = req.query.recipeId;
+    console.log(user_id);
+    console.log(recipe_id);
+    await user_utils.deleteRecipe(user_id, recipe_id);
+    res.status(200).send("The Recipe successfully deleted");
+  } catch (error) {
+    next(error);
+  }
+});
+
 /**
  * This path returns a full details of a recipe by its id
  */

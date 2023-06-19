@@ -1,4 +1,4 @@
--- Active: 1684857355945@@127.0.0.1@3306@recipe_db
+-- Active: 1685019137854@@127.0.0.1@3306@recipe_db
 DROP DATABASE IF EXISTS recipe_db;
 
 CREATE DATABASE recipe_db;
@@ -61,7 +61,7 @@ CREATE TABLE
         amount INT,
         units ENUM("g", "kg", "ml", "l", "tsp", "tbsp", "cup", "piece"),
         PRIMARY KEY (id, ingredient_id),
-        FOREIGN KEY (id) REFERENCES recipes(id),
+        FOREIGN KEY (id) REFERENCES recipes(id) ON DELETE CASCADE,
         FOREIGN KEY (ingredient_id) REFERENCES ingredients(ingredient_id)
     );
 
@@ -71,7 +71,7 @@ CREATE TABLE
         id INT,
         step_number INT,
         description VARCHAR(1000),
-        FOREIGN KEY (id) REFERENCES recipes(id)
+        FOREIGN KEY (id) REFERENCES recipes(id) ON DELETE CASCADE
     );
 
 CREATE TABLE
@@ -93,8 +93,8 @@ CREATE TABLE
         id INT,
         data TEXT,
         PRIMARY KEY (family_id, id),
-        FOREIGN KEY (family_id) REFERENCES family(family_id),
-        FOREIGN KEY (id) REFERENCES recipes(id)
+        FOREIGN KEY (family_id) REFERENCES family(family_id) ON DELETE CASCADE,
+        FOREIGN KEY (id) REFERENCES recipes(id) ON DELETE CASCADE
     );
 
 

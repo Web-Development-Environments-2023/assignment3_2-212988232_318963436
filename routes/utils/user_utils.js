@@ -29,6 +29,14 @@ async function getMyRecipes(user_id) {
   return recipes;
 }
 
+
+async function deleteRecipe(user_id, recipe_id) {
+  await DButils.execQuery(
+    `delete from recipes where user_id='${user_id}' and id=${recipe_id}`
+  );
+}
+
+
 async function createRecipe(user_id, recipe) {
   let { title, image, readyInMinutes, vegetarian, vegan, glutenFree } =
     recipe.previewDetails;
@@ -139,3 +147,4 @@ exports.getThreeLastSeens = getThreeLastSeens;
 exports.setseen = setseen;
 exports.getIngerdients = getIngerdients;
 exports.getRecipe = getRecipe;
+exports.deleteRecipe = deleteRecipe;
