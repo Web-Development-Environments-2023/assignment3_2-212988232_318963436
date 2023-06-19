@@ -30,12 +30,12 @@ async function getMyRecipes(user_id) {
 }
 
 async function createRecipe(user_id, recipe) {
-  let { title, image, readyInMinutes, vegiterian, vegan, glutenfree } =
+  let { title, image, readyInMinutes, vegetarian, vegan, glutenFree } =
     recipe.previewDetails;
   let servings = recipe.servings;
 
-  let query = `INSERT INTO recipes (title, image, readyInMinutes, vegiterian, vegan, glutenfree, recipe_date,servings, user_id)
-             VALUES ('${title}', '${image}', '${readyInMinutes}', ${vegiterian}, ${vegan}, ${glutenfree}, CURDATE(),${servings} ,'${user_id}');`;
+  let query = `INSERT INTO recipes (title, image, readyInMinutes, vegetarian, vegan, glutenFree, recipe_date,servings, user_id)
+             VALUES ('${title}', '${image}', '${readyInMinutes}', ${vegetarian}, ${vegan}, ${glutenFree}, CURDATE(),${servings} ,'${user_id}');`;
 
   let result = await DButils.execQuery(query);
   let id = result.insertId;
