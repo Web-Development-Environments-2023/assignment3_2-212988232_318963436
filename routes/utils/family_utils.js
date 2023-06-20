@@ -82,11 +82,11 @@ async function getFamilyRecipes(family_id) {
   );
   return recipes;
 }
-async function getFamilyRecipesInfo(recipes_id_array) {
+async function getFamilyRecipesInfo(recipes_id_array, family_id) {
   recipes_id_array = recipes_id_array.map((recipe) => recipe.id);
 
   recipes = await DButils.execQuery(
-    `select recipes.*, recipe_family.*, users.firstname , users.lastname  from recipes inner join recipe_family on recipes.id=recipe_family.id join users on recipes.user_id=users.user_id where recipes.id in (${recipes_id_array})`
+    `select recipes.*, recipe_family.*, users.firstname , users.lastname  from recipes inner join recipe_family on recipes.id=recipe_family.id join users on recipes.user_id=users.user_id where recipes.id in (${recipes_id_array}) and recipe_family.family_id='${family_id}'`
   );
   return recipes;
 }

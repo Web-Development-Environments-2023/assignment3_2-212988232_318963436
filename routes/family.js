@@ -37,7 +37,10 @@ router.get("/recipes", async (req, res, next) => {
     if (recipe_ids.length == 0) {
       throw { status: 404, message: "There are no recipes in this family" };
     }
-    const recipes = await family_utils.getFamilyRecipesInfo(recipe_ids);
+    const recipes = await family_utils.getFamilyRecipesInfo(
+      recipe_ids,
+      family_id
+    );
 
     res.send(recipes);
   } catch (error) {
